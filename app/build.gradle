@@ -63,8 +63,15 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
 
+    // Integration with ViewModels
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0-alpha01'
+
+    // Integration with observables
+    implementation 'androidx.compose.runtime:runtime-livedata:1.0.5'
+    implementation 'androidx.compose.runtime:runtime-rxjava2:1.0.5'
+
     // Jetpack Compose Constraint Layouts
-    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0-beta02"
+    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0"
 
     // Hide Secrets
     implementation "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.0"
@@ -75,4 +82,10 @@ dependencies {
     // OkHttp
     implementation 'com.squareup.okhttp3:okhttp:4.9.0'
 
+    // Glide
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
+
+    /**  Coil for compose CAUSING ERROR */
+//    implementation 'io.coil-kt:coil-compose:1.4.0'
 }

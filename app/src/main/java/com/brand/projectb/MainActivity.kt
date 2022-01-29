@@ -12,12 +12,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.focus.focusModifier
-import androidx.compose.ui.graphics.vector.PathNode
-import androidx.compose.ui.layout.HorizontalAlignmentLine
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -64,7 +60,7 @@ fun Cocktail(_cocktail: CocktailModel) {
 
     ConstraintLayout(modifier = Modifier
         .padding(8.dp)
-        .fillMaxWidth()
+        .fillMaxWidth(1f)
     ) {
 
         /** View References */

@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">ProjectB</string>
+    
+    
+    <string name="endPoint">
+    </string>
+    
 </resources>

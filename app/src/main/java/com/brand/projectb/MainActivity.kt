@@ -1,19 +1,22 @@
 package com.brand.projectb
 
 import android.os.Bundle
-import android.widget.Space
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -52,21 +55,22 @@ fun CocktailList(_cocktailList: List<CocktailModel>) {
 @Composable
 fun Cocktail(_cocktail: CocktailModel) {
 
-    var isAlcoholic by remember { mutableStateOf(0f) }
+    var isVisible by remember { mutableStateOf(0f) }
+    var isExpanded by remember { mutableStateOf(true) }
 
-    if (CocktailIsAlcoholic(_cocktail.drinkIsAlcoholic)) {
-        isAlcoholic = 100f
-    }
+//    if (cocktailIsAlcoholic(_cocktail.drinkIsAlcoholic)) {
+//        isVisible = 100f
+//    }
 
-    ConstraintLayout(modifier = Modifier
-        .padding(8.dp)
-        .fillMaxWidth(1f)
+    ConstraintLayout(
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
     ) {
 
         /** View References */
         val (
             columnCocktailDetails,
-            textCocktailName,
             imageCocktailPreview,
             imageIsAlcoholicLabel,
         ) = createRefs()
@@ -74,36 +78,59 @@ fun Cocktail(_cocktail: CocktailModel) {
         Image(
             painter = painterResource(id = R.mipmap.testdrink),
             contentDescription = "Drink Thumbnail",
-            modifier = Modifier.constrainAs(imageCocktailPreview) {
-                start.linkTo(parent.start)
-                top.linkTo(parent.top)
-            }
+            modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .constrainAs(imageCocktailPreview) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                }
         )
-        Column(modifier = Modifier.constrainAs(columnCocktailDetails) {
-            start.linkTo(imageCocktailPreview.end, margin = 16.dp)
-            top.linkTo(imageCocktailPreview.top)
-        }) {
-            ConstraintLayout() {
-                Text(text = _cocktail.drinkName,
-                    modifier = Modifier
-                        .constrainAs(textCocktailName) {
-                            top.linkTo(parent.top)
-                        }
+
+        ConstraintLayout(
+            modifier = Modifier
+                .constrainAs(columnCocktailDetails) {
+                    top.linkTo(imageCocktailPreview.top)
+                    start.linkTo(imageCocktailPreview.end, margin = 16.dp)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.wrapContent
+                }
+        ) {
+            Column(modifier = Modifier
+                .clickable { isExpanded = !isExpanded }
+                .constrainAs(columnCocktailDetails) {
+                    end.linkTo(imageIsAlcoholicLabel.start)
+                    start.linkTo(parent.start)
+                    width = Dimension.fillToConstraints
+                }) {
+                Text(
+                    text = _cocktail.drinkName,
+                    style = MaterialTheme.typography.h5
                 )
-                Image(
-                    painter = painterResource(id = R.mipmap.nonalcoholic),
-                    contentDescription = "Alcohol Free Drink",
-                    modifier = Modifier
-                        .alpha(isAlcoholic)
-                        .constrainAs(imageIsAlcoholicLabel) {
-                            end.linkTo(parent.end)
-                            top.linkTo(textCocktailName.top)
-                            bottom.linkTo(textCocktailName.bottom)
-                            height = Dimension.fillToConstraints
-                            width = Dimension.wrapContent
-                        }
+                Text(
+                    text = _cocktail.drinkTags,
+                    style = MaterialTheme.typography.subtitle2,
+                    modifier = Modifier.alpha(.5f)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = _cocktail.drinkInstructions,
+                    maxLines = if(isExpanded) Int.MAX_VALUE else 1,
+                    style = MaterialTheme.typography.body2,
+                    modifier = expandBody(isExpanded)
                 )
             }
+            Image(
+                painter = painterResource(id = R.mipmap.nonalcoholic),
+                contentDescription = "Alcohol Free Drink",
+                modifier = Modifier
+                    .size(22.dp)
+                    .alpha(isVisible)
+                    .constrainAs(imageIsAlcoholicLabel) {
+                        end.linkTo(parent.end)
+                        top.linkTo(columnCocktailDetails.top)
+                    }
+            )
         }
 
     }
@@ -111,14 +138,27 @@ fun Cocktail(_cocktail: CocktailModel) {
 
 }
 
-fun CocktailIsAlcoholic(_alcoholicDrink: String): Boolean {
+private fun bodyVisible(_isAlcoholic: String): Float {
+    return if (alcoholicDrink(_isAlcoholic)) {
+         100f
+    } else 0f
+}
+
+private fun alcoholicDrink(_alcoholicDrink: String): Boolean {
     return _alcoholicDrink != "Alcoholic"
+}
+
+private fun expandBody(bodyClicked: Boolean): Modifier {
+    return if(!bodyClicked) {
+        Modifier.animateContentSize().height(0.dp)
+    } else Modifier.animateContentSize().wrapContentHeight()
 }
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     ProjectBTheme {
-        CocktailList(_cocktailList = CocktailTestData.cocktailList)
+//        CocktailList(_cocktailList = CocktailTestData.cocktailList)
+        Cocktail(_cocktail = CocktailTestData.cocktailNonAlcoholic)
     }
 }

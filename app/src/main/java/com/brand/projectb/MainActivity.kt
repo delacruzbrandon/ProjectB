@@ -1,10 +1,13 @@
 package com.brand.projectb
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,18 +20,29 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.lifecycle.ViewModelProvider
 import com.brand.projectb.dataservice.CocktailTestData
 import com.brand.projectb.model.CocktailModel
 import com.brand.projectb.ui.theme.ProjectBTheme
+import com.brand.projectb.viewmodel.cocktail.CocktailViewModel
 
+private const val TAG = "MainActivity"
 class MainActivity : ComponentActivity() {
+
+    lateinit var cocktails: List<CocktailModel>
+    lateinit var cocktailViewModel: CocktailViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
         setContent {
             ProjectBTheme {
                 // A surface container using the 'background' color from the theme
@@ -36,15 +50,24 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
+//                    CocktailList(_cocktailList = cocktails)
                     DefaultPreview()
+                    cocktailViewModel = ViewModelProvider(this)[CocktailViewModel::class.java]
+                    cocktailViewModel.cocktailList.observe(this) {
+                        Log.d(TAG, "onCreate: $it")
+                    }
                 }
             }
         }
+
     }
+
 }
 
 @Composable
 fun CocktailList(_cocktailList: List<CocktailModel>) {
+
+
     LazyColumn {
         items(_cocktailList) { _cocktail ->
             Cocktail(_cocktail = _cocktail)
@@ -65,7 +88,18 @@ fun Cocktail(_cocktail: CocktailModel) {
     ConstraintLayout(
         modifier = Modifier
             .padding(16.dp)
+            .wrapContentHeight()
             .fillMaxWidth()
+            .border(
+                BorderStroke(
+                    1.dp, Brush.horizontalGradient(
+                        0.8f to Color.Gray,
+                        1.0f to Color.White,
+                        startX = 0.0f,
+                        endX = 100.0f
+                    )
+                )
+            )
     ) {
 
         /** View References */
@@ -150,8 +184,12 @@ private fun alcoholicDrink(_alcoholicDrink: String): Boolean {
 
 private fun expandBody(bodyClicked: Boolean): Modifier {
     return if(!bodyClicked) {
-        Modifier.animateContentSize().height(0.dp)
-    } else Modifier.animateContentSize().wrapContentHeight()
+        Modifier
+            .animateContentSize()
+            .height(0.dp)
+    } else Modifier
+        .animateContentSize()
+        .wrapContentHeight()
 }
 
 @Preview(showBackground = true)

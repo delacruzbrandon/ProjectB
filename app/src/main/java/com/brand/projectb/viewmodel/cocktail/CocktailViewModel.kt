@@ -1,4 +1,4 @@
-package com.brand.projectb.viewmodel
+package com.brand.projectb.viewmodel.cocktail
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -6,9 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.brand.projectb.model.CocktailModel
 import com.brand.projectb.dataservice.CocktailBuilder
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class CocktailViewModel: ViewModel() {
+class CocktailViewModel(): ViewModel() {
 
     /** Cocktail Details */
     private val _cocktailDetails = MutableLiveData<CocktailModel>()
@@ -23,7 +24,7 @@ class CocktailViewModel: ViewModel() {
     private val cocktailBuilder = CocktailBuilder
 
     init {
-
+        getCocktails()
     }
 
     private fun getCocktails() {
